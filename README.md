@@ -1,2 +1,2 @@
-# wakuwakukosenjo
-ランぬのわくわく古戦場
+# lannnukisekae
+ランぬの着せ替えゲーム
