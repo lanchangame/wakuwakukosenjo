@@ -1,4 +1,3 @@
-// info.js
 const infoContentHTML = `
     <h2>遊びかた</h2>
     <p>
