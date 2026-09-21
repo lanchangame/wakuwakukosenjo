@@ -1292,43 +1292,44 @@
         }
     }
 
-    function setDefaultLancelotImg() {
-        currentLancelotImg = 'lancelot_1.png';
-    }
+function setDefaultLancelotImg() {
+    currentLancelotImg = 'lancelot_1.png';
+}
 
-    function updateLancelotImage() {
-        const img = document.getElementById('lancelot-img');
-        if (img) {
-            if (img.getAttribute('src') !== currentLancelotImg) {
-                img.src = currentLancelotImg;
-            }
+function updateLancelotImage() {
+    const img = document.getElementById('lancelot-img');
+    if (!img) return;
+
+    const targetImg = currentLancelotImg;
+
+    if (img.getAttribute('src') === targetImg) return;
+
+    const preloadImg = new Image();
+
+    preloadImg.onload = () => {
+        if (currentLancelotImg === targetImg) {
+            img.src = targetImg;
         }
-    }
+    };
 
-    function triggerAfkEvent() {
+    preloadImg.onerror = () => {
+        console.error(`画像の読み込みに失敗しました: ${targetImg}`);
+    };
+
+    preloadImg.src = targetImg;
+}
+
+function triggerAfkEvent() {
     const afkActions = [
         { img: 'lancelot_5.png', msg: '団長、どうしたんだ⋯？' },
         { img: 'lancelot_7.png', msg: 'すぅ……団長、無理しないでくれ……' },
         { img: 'lancelot_8.png', msg: 'むにゃ……もうプリンは食べられないぞ……' }
     ];
-
     const act = afkActions[Math.floor(Math.random() * afkActions.length)];
-
-    const preloadImg = new Image();
-
-    preloadImg.onload = () => {
-        currentLancelotImg = act.img;
-        setLancelotMessage(act.msg);
-        updateLancelotImage();
-    };
-
-    preloadImg.onerror = () => {
-        setLancelotMessage(act.msg);
-    };
-
-    preloadImg.src = act.img;
+    currentLancelotImg = act.img;
+    setLancelotMessage(act.msg);
+    updateLancelotImage();
 }
-
     function resetAfkTimer() {
         if (!isGameStarted) return;
         if (afkTimer) clearTimeout(afkTimer);
