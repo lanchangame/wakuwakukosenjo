@@ -1306,16 +1306,28 @@
     }
 
     function triggerAfkEvent() {
-        const afkActions = [
-            { img: 'lancelot_5.png', msg: '団長、どうしたんだ⋯？' },
-            { img: 'lancelot_7.png', msg: 'すぅ……団長、無理しないでくれ……' },
-            { img: 'lancelot_8.png', msg: 'むにゃ……もうプリンは食べられないぞ……' }
-        ];
-        const act = afkActions[Math.floor(Math.random() * afkActions.length)];
+    const afkActions = [
+        { img: 'lancelot_5.png', msg: '団長、どうしたんだ⋯？' },
+        { img: 'lancelot_7.png', msg: 'すぅ……団長、無理しないでくれ……' },
+        { img: 'lancelot_8.png', msg: 'むにゃ……もうプリンは食べられないぞ……' }
+    ];
+
+    const act = afkActions[Math.floor(Math.random() * afkActions.length)];
+
+    const preloadImg = new Image();
+
+    preloadImg.onload = () => {
         currentLancelotImg = act.img;
         setLancelotMessage(act.msg);
         updateLancelotImage();
-    }
+    };
+
+    preloadImg.onerror = () => {
+        setLancelotMessage(act.msg);
+    };
+
+    preloadImg.src = act.img;
+}
 
     function resetAfkTimer() {
         if (!isGameStarted) return;
