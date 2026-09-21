@@ -816,10 +816,10 @@
                 </div>
 
                 <div class="input-group">
-                    <input type="number" id="input-score" placeholder="現在の累計貢献度を入力" onkeydown="if(['e', 'E', '+', '-', '.'].includes(event.key)) event.preventDefault();" disabled>
+                    <input type="number" id="input-score" placeholder="現在の累計貢献度を入力" onkeydown="if(['e', 'E', '+', '-', '.'].includes(event.key)) event.preventDefault();">
                     <div style="display: grid; grid-auto-rows: 1fr; gap: 10px; flex-shrink: 0;">
-                        <button id="btn-report" onclick="reportScore()" style="width: 100%; height: 100%;" disabled>報告する</button>
-                        <button id="btn-fix" onclick="fixScore()" style="width: 100%; height: 100%; background-color: #f39c12;" disabled>貢献度修正<br><span style="font-size:10px;">（コインは増加しません。）</span></button>
+                        <button id="btn-report" onclick="reportScore()" style="width: 100%; height: 100%;">報告する</button>
+                        <button id="btn-fix" onclick="fixScore()" style="width: 100%; height: 100%; background-color: #f39c12;">貢献度修正<br><span style="font-size:10px;">（コインは増加しません。）</span></button>
                     </div>
                 </div>
                 <div id="cooldown-text"></div>
@@ -969,7 +969,7 @@
     let equipOrder = [];
 
     const SAVE_VERSION = 1;
-    const INITIAL_COINS = 3000;
+    const INITIAL_COINS = 1000;
 
     const defaultState = {
         version: SAVE_VERSION, 
@@ -2105,17 +2105,19 @@
     }
 
     function updateCooldownUI() {
-        const input = document.getElementById('input-score');
-        const reportBtn = document.getElementById('btn-report');
-        const fixBtn = document.getElementById('btn-fix');
-
-        input.disabled = true;
-        reportBtn.disabled = true;
-        fixBtn.disabled = true;
-
-        document.getElementById('cooldown-text').innerText = "古戦場開始後に貢献度を報告できるようになります。";
-
-        if (timerInterval) clearInterval(timerInterval);
+        const now = Date.now();
+        const diff = COOLDOWN_MS - (now - state.lastReportTime);
+        
+        if (state.lastReportTime === 0 || diff <= 0) {
+            document.getElementById('cooldown-text').innerText = "報告可能だぞ！";
+            document.getElementById('btn-report').disabled = false;
+            if (timerInterval) clearInterval(timerInterval);
+        } else {
+            const min = Math.floor(diff / 1000 / 60);
+            const sec = Math.floor((diff / 1000) % 60);
+            document.getElementById('cooldown-text').innerText = `次の報告まで: ${min}分 ${sec}秒`;
+            document.getElementById('btn-report').disabled = true;
+        }
     }
 
     function startCooldownTimer() {
@@ -2180,7 +2182,7 @@
 
     function shareOnX() {
         const scoreStr = state.totalScore.toLocaleString();
-        const text = `古戦場まであと少しだ。団長、準備はできているか？ #ランぬのわくわく古戦場 https://lanchangame.github.io/wakuwakukosenjo/`;
+        const text = `古戦場お疲れ様。今の団長の貢献度は${scoreStr}だぞ。少し俺と休憩していかないか？ #ランぬのわくわく古戦場 https://lanchangame.github.io/wakuwakukosenjo/`;
         const url = `https://x.com/intent/tweet?text=${encodeURIComponent(text)}`;
         window.open(url, '_blank');
     }
