@@ -733,7 +733,7 @@
             古戦場の累計貢献度を報告して<br>
             着せ替えを楽しもう！<br>
             
-            <img src="dayo.png" alt="アバター" style="max-width: 180px; height: auto; display: block; margin: 15px auto;">
+            <img src="dsfdsd.png" alt="アバター" style="max-width: 180px; height: auto; display: block; margin: 15px auto;">
         </p>
         
         <button onclick="showInfo()" style="width: 260px; font-size: 18px; padding: 12px 0; margin-bottom: 15px; background-color: var(--accent);">はじめに読んでね</button><br>
@@ -970,6 +970,7 @@
 
     const SAVE_VERSION = 1;
     const INITIAL_COINS = 1000;
+    const FREE_GIFT_IDS = ['tops56', 'acc249', 'bg93', 'bg94'];
 
     const defaultState = {
         version: SAVE_VERSION, 
@@ -1292,44 +1293,31 @@
         }
     }
 
-function setDefaultLancelotImg() {
-    currentLancelotImg = 'lancelot_1.png';
-}
+    function setDefaultLancelotImg() {
+        currentLancelotImg = 'lancelot_1.png';
+    }
 
-function updateLancelotImage() {
-    const img = document.getElementById('lancelot-img');
-    if (!img) return;
-
-    const targetImg = currentLancelotImg;
-
-    if (img.getAttribute('src') === targetImg) return;
-
-    const preloadImg = new Image();
-
-    preloadImg.onload = () => {
-        if (currentLancelotImg === targetImg) {
-            img.src = targetImg;
+    function updateLancelotImage() {
+        const img = document.getElementById('lancelot-img');
+        if (img) {
+            if (img.getAttribute('src') !== currentLancelotImg) {
+                img.src = currentLancelotImg;
+            }
         }
-    };
+    }
 
-    preloadImg.onerror = () => {
-        console.error(`画像の読み込みに失敗しました: ${targetImg}`);
-    };
+    function triggerAfkEvent() {
+        const afkActions = [
+            { img: 'lancelot_5.png', msg: '団長、どうしたんだ⋯？' },
+            { img: 'lancelot_7.png', msg: 'すぅ……団長、無理しないでくれ……' },
+            { img: 'lancelot_8.png', msg: 'むにゃ……もうプリンは食べられないぞ……' }
+        ];
+        const act = afkActions[Math.floor(Math.random() * afkActions.length)];
+        currentLancelotImg = act.img;
+        setLancelotMessage(act.msg);
+        updateLancelotImage();
+    }
 
-    preloadImg.src = targetImg;
-}
-
-function triggerAfkEvent() {
-    const afkActions = [
-        { img: 'lancelot_5.png', msg: '団長、どうしたんだ⋯？' },
-        { img: 'lancelot_7.png', msg: 'すぅ……団長、無理しないでくれ……' },
-        { img: 'lancelot_8.png', msg: 'むにゃ……もうプリンは食べられないぞ……' }
-    ];
-    const act = afkActions[Math.floor(Math.random() * afkActions.length)];
-    currentLancelotImg = act.img;
-    setLancelotMessage(act.msg);
-    updateLancelotImage();
-}
     function resetAfkTimer() {
         if (!isGameStarted) return;
         if (afkTimer) clearTimeout(afkTimer);
@@ -1850,9 +1838,10 @@ function triggerAfkEvent() {
         if (item.type === 'bg') price = 200;
         if (item.type === 'acc') price = 150;
         if (item.type === 'tops' || item.type === 'bottoms') price = 250;
+        if (FREE_GIFT_IDS.includes(item.id)) price = 0;
         
         const buyBtn = document.getElementById('btn-buy-preview');
-        buyBtn.innerText = `${price}コインで解放`;
+        buyBtn.innerText = FREE_GIFT_IDS.includes(item.id) ? '俺からのプレゼントだ！' : `${price}コインで解放`;
         buyBtn.disabled = false;
     }
 
@@ -1863,6 +1852,7 @@ function triggerAfkEvent() {
         if(previewTarget.type === 'bg') price = 200;
         if(previewTarget.type === 'acc') price = 150;
         if(previewTarget.type === 'tops' || previewTarget.type === 'bottoms') price = 250;
+        if (FREE_GIFT_IDS.includes(previewTarget.id)) price = 0;
         
         if (state.coins < price) {
             showCustomAlert("コインが不足しているぞ！");
@@ -1874,7 +1864,10 @@ function triggerAfkEvent() {
         
         const specialWeaponIds = ['acc23','acc74','acc112', 'acc140', 'acc191' , 'acc192', 'acc196' , 'acc201','acc204','acc205','acc206','acc216','acc222','acc224','acc233', ];
         
-        if (specialWeaponIds.includes(previewTarget.id)) {
+        if (FREE_GIFT_IDS.includes(previewTarget.id)) {
+            setDefaultLancelotImg();
+            setLancelotMessage(`「${previewTarget.name}」は俺からのプレゼントだ。クローゼットに入れておいたぞ。`);
+        } else if (specialWeaponIds.includes(previewTarget.id)) {
             currentLancelotImg = 'lancelot_6.png';
             setLancelotMessage(`これは……！団長、${previewTarget.name}を手に入れたのか！羨ましいな。俺は武器を集めるのが好きなんだ！`);
         } else {
